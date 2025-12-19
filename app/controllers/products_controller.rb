@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_product, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_product, only: [ :show, :edit, :update, :destroy, :sell ]
 
   def index
     @products = Product.includes(:category).order(created_at: :desc)
@@ -39,6 +39,16 @@ class ProductsController < ApplicationController
     end
   end
 
+  def sell
+    service = ::ProductSaleService.new(@product)
+
+    if service.call
+      redirect_to products_path, notice: "Produto vendido com sucesso!"
+    else
+      redirect_to products_path, alert: service.errors.join(", ")
+    end
+  end
+
   def destroy
     @product.destroy
     redirect_to products_path, notice: "Produto removido com sucesso!"
@@ -51,6 +61,6 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.require(:product).permit(:name, :color, :size, :battery_percentage, :condition, :status, :price, :description, :category_id)
+    params.require(:product).permit(:name, :color, :storage, :battery_percentage, :condition, :status, :price, :description, :category_id)
   end
 end

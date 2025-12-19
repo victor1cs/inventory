@@ -37,7 +37,13 @@
             <td><strong><%= number_to_currency(product.price) %></strong></td>
             <td>
               <div class="actions">
-                <%= link_to 'Ver', product, class: 'btn btn-secondary btn-sm' %>
+                <% if product.in_stock? %>
+                  <%= button_to 'Vender', sell_product_path(product), 
+                      method: :patch, 
+                      data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' }, 
+                      class: 'btn btn-success btn-sm',
+                      form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' } } %>
+                <% end %>
                 <%= link_to 'Editar', edit_product_path(product), class: 'btn btn-primary btn-sm' %>
                 <%= button_to 'Remover', product, 
                     method: :delete, 
@@ -89,13 +95,19 @@
         </div>
 
         <div class="product-card-footer">
-          <%= link_to 'Ver', product, class: 'btn btn-secondary btn-sm' %>
+          <% if product.in_stock? %>
+            <%= button_to 'Vender', sell_product_path(product), 
+                method: :patch, 
+                data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' }, 
+                class: 'btn btn-success btn-sm',
+                form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' } } %>
+          <% end %>
           <%= link_to 'Editar', edit_product_path(product), class: 'btn btn-primary btn-sm' %>
           <%= button_to 'Remover', product, 
               method: :delete, 
-              data: { confirm: 'Tem certeza?' }, 
+              data: { confirm: 'Tem certeza que deseja remover este produto?' }, 
               class: 'btn btn-danger btn-sm',
-              form: { style: 'display: inline;', data: { confirm: 'Tem certeza?' } } %>
+              form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja remover este produto?' } } %>
         </div>
       </div>
     <% end %>

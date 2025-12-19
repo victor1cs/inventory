@@ -1,2 +1,88 @@
-<h1>Products#edit</h1>
-<p>Find me in app/views/products/edit.html.erb</p>
+<div class="page-header">
+  <h1>Editar Produto</h1>
+  <%= link_to '← Voltar', products_path, class: 'btn btn-secondary' %>
+</div>
+
+<div class="form-container">
+  <%= form_with(model: @product, local: true) do |f| %>
+    <% if @product.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@product.errors.count, "erro") %> impediu que este produto fosse salvo:</h2>
+        <ul>
+          <% @product.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :name, "Nome do Produto" %>
+      <%= f.text_field :name, autofocus: true, placeholder: "Ex: iPhone 15 Pro" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :category_id, "Categoria" %>
+      <%= f.collection_select :category_id, @categories, :id, :name, 
+          { selected: @product.category_id, prompt: "Selecione uma categoria" }, 
+          { class: "form-select" } %>
+    </div>
+
+    <div class="field">
+      <%= f.label :description, "Descrição" %>
+      <%= f.text_area :description, rows: 3, placeholder: "Descrição detalhada do produto" %>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="field">
+        <%= f.label :color, "Cor" %>
+        <%= f.text_field :color, placeholder: "Ex: Space Black" %>
+      </div>
+
+      <div class="field">
+        <%= f.label :storage, "Armazenamento" %>
+        <%= f.text_field :storage, placeholder: "Ex: 256GB" %>
+      </div>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="field">
+        <%= f.label :price, "Preço (R$)" %>
+        <%= f.number_field :price, step: 0.01, min: 0, placeholder: "0.00" %>
+      </div>
+
+      <div class="field">
+        <%= f.label :battery_percentage, "Bateria (%)" %>
+        <%= f.number_field :battery_percentage, min: 0, max: 100, placeholder: "Ex: 90" %>
+      </div>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="field">
+        <%= f.label :condition, "Condição" %>
+        <%= f.select :condition, 
+            options_for_select([
+              ['Novo', 'factory_new'],
+              ['Usado', 'used']
+            ], @product.condition), 
+            { prompt: "Selecione a condição" },
+            { class: "form-select" } %>
+      </div>
+
+      <div class="field">
+        <%= f.label :status, "Status" %>
+        <%= f.select :status, 
+            options_for_select([
+              ['Em Estoque', 'in_stock'],
+              ['Vendido', 'sold']
+            ], @product.status), 
+            { prompt: "Selecione o status" },
+            { class: "form-select" } %>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Atualizar Produto", class: "btn btn-primary btn-block" %>
+    </div>
+  <% end %>
+</div>

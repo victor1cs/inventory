@@ -1,2 +1,78 @@
-<h1>Categories#index</h1>
-<p>Find me in app/views/categories/index.html.erb</p>
+<div class="page-header">
+  <h1>Categorias</h1>
+  <%= link_to 'Nova Categoria', new_category_path, class: 'btn btn-primary' %>
+</div>
+
+<% if @categories.any? %>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Total de Produtos</th>
+          <th>Criado em</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @categories.each do |category| %>
+          <tr>
+            <td><strong><%= category.name %></strong></td>
+            <td>
+              <span class="badge badge-info">
+                <%= pluralize(category.products.count, 'produto', 'produtos') %>
+              </span>
+            </td>
+            <td><%= l(category.created_at, format: :short) %></td>
+            <td>
+              <div class="actions">
+                <%= link_to 'Editar', edit_category_path(category), class: 'btn btn-primary btn-sm' %>
+                <%= button_to 'Remover', category, 
+                    method: :delete, 
+                    data: { confirm: 'Tem certeza que deseja remover esta categoria?' }, 
+                    class: 'btn btn-danger btn-sm',
+                    form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja remover esta categoria?' } } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="products-grid">
+    <% @categories.each do |category| %>
+      <div class="product-card">
+        <div class="product-card-header">
+          <h3 class="product-card-title"><%= category.name %></h3>
+          <span class="badge badge-info">
+            <%= pluralize(category.products.count, 'produto', 'produtos') %>
+          </span>
+        </div>
+
+        <div class="product-card-body">
+          <div class="product-card-info">
+            <div class="product-card-info-item">
+              <span class="product-card-info-label">Criado em:</span>
+              <span class="product-card-info-value"><%= l(category.created_at, format: :short) %></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card-footer">
+          <%= link_to 'Editar', edit_category_path(category), class: 'btn btn-primary btn-sm' %>
+          <%= button_to 'Remover', category, 
+              method: :delete, 
+              data: { confirm: 'Tem certeza?' }, 
+              class: 'btn btn-danger btn-sm',
+              form: { style: 'display: inline;', data: { confirm: 'Tem certeza?' } } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <p>Nenhuma categoria cadastrada ainda.</p>
+    <%= link_to 'Cadastre a primeira categoria', new_category_path, class: 'btn btn-primary' %>
+  </div>
+<% end %>
