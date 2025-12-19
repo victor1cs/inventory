@@ -11,6 +11,7 @@ RUN apt-get update -qq && \
     libvips \
     nodejs \
     postgresql-client \
+    redis-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar gems

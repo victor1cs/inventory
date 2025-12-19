@@ -10,12 +10,19 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: inventory_development
     ports:
-      - "5432:5432"  # Corrigido: PostgreSQL na porta 5432
+      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   web:
     build:
@@ -30,10 +37,33 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/inventory_development
       - RAILS_ENV=development
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bundle exec sidekiq
+    volumes:
+      - .:/rails
+      - bundle_data:/usr/local/bundle
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/inventory_development
+      - RAILS_ENV=development
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
 volumes:
   postgres_data:
   bundle_data:
+  redis_data:
+  

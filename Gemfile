@@ -31,6 +31,11 @@ gem "solid_cable"
 # Authentication
 gem "devise"
 
+# Background Jobs
+gem "connection_pool", "~> 2.4.1"
+gem "sidekiq", "~> 7.3"
+gem "sidekiq-cron"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
