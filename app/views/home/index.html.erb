@@ -1,0 +1,21 @@
+<div class="empty-state">
+  <h1>Bem-vindo ao Sistema de Inventário</h1>
+
+  <% if user_signed_in? %>
+    <p style="font-size: 1.2rem; margin: 2rem 0;">
+      Olá, <strong><%= current_user.email %></strong>!
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+      <%= link_to "Ver Produtos", products_path, class: "btn btn-primary" %>
+      <%= link_to "Gerenciar Categorias", categories_path, class: "btn btn-secondary" %>
+    </div>
+  <% else %>
+    <p style="font-size: 1.2rem; margin: 2rem 0;">
+      Faça login para acessar o sistema de gerenciamento de inventário
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+      <%= link_to "Entrar", new_user_session_path, class: "btn btn-primary" %>
+      <%= link_to "Criar Conta", new_user_registration_path, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>

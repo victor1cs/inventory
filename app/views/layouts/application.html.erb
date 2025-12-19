@@ -20,9 +20,63 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <header class="header">
+      <div class="header-content">
+        <%= link_to "Inventory System", root_path, class: "logo" %>
+        <nav class="user-menu">
+          <% if user_signed_in? %>
+            <span class="user-info">Olá, <%= current_user.email %></span>
+            <%= link_to "Produtos", products_path, class: "btn btn-primary" %>
+            <%= link_to "Categorias", categories_path, class: "btn btn-secondary" %>
+            <%= button_to "Sair", destroy_user_session_path, 
+                method: :delete, 
+                class: "btn btn-danger",
+                form: { style: "display: inline;" } %>
+          <% else %>
+            <%= link_to "Entrar", new_user_session_path, class: "btn btn-primary" %>
+            <%= link_to "Cadastrar", new_user_registration_path, class: "btn btn-secondary" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <% if notice %>
+        <div class="alert alert-notice"><%= notice %></div>
+      <% end %>
+
+      <% if alert %>
+        <div class="alert alert-alert"><%= alert %></div>
+      <% end %>
+
+      <div class="container">
+        <%= yield %>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <p>Desenvolvido por <strong>victor1cs</strong></p>
+        <p>Sistema de Gerenciamento de Inventário - 2025</p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('submit', function(e) {
+          const form = e.target.closest('form');
+          if (form && form.dataset.confirm) {
+            if (!confirm(form.dataset.confirm)) {
+              e.preventDefault();
+              return false;
+            }
+          }
+        });
+      });
+    </script>
   </body>
 </html>

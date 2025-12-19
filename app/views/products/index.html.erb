@@ -1,0 +1,108 @@
+<div class="page-header">
+  <h1>Produtos</h1>
+  <%= link_to 'Novo Produto', new_product_path, class: 'btn btn-primary' %>
+</div>
+
+<% if @products.any? %>
+  <!-- Desktop Table View -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Cor</th>
+          <th>Condição</th>
+          <th>Status</th>
+          <th>Preço</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @products.each do |product| %>
+          <tr>
+            <td><strong><%= product.name %></strong></td>
+            <td><span class="badge badge-info"><%= product.category.name %></span></td>
+            <td><%= product.color || "N/A" %></td>
+            <td>
+              <span class="badge <%= product.condition == 'factory_new' ? 'badge-success' : 'badge-info' %>">
+                <%= product.condition.humanize %>
+              </span>
+            </td>
+            <td>
+              <span class="badge <%= product.status == 'in_stock' ? 'badge-success' : 'badge-danger' %>">
+                <%= product.status.humanize %>
+              </span>
+            </td>
+            <td><strong><%= number_to_currency(product.price) %></strong></td>
+            <td>
+              <div class="actions">
+                <%= link_to 'Ver', product, class: 'btn btn-secondary btn-sm' %>
+                <%= link_to 'Editar', edit_product_path(product), class: 'btn btn-primary btn-sm' %>
+                <%= button_to 'Remover', product, 
+                    method: :delete, 
+                    data: { confirm: 'Tem certeza que deseja remover este produto?' }, 
+                    class: 'btn btn-danger btn-sm',
+                    form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja remover este produto?' } } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="products-grid">
+    <% @products.each do |product| %>
+      <div class="product-card">
+        <div class="product-card-header">
+          <h3 class="product-card-title"><%= product.name %></h3>
+          <span class="badge badge-info"><%= product.category.name %></span>
+        </div>
+
+        <div class="product-card-body">
+          <div class="product-card-info">
+            <div class="product-card-info-item">
+              <span class="product-card-info-label">Cor:</span>
+              <span class="product-card-info-value"><%= product.color || "N/A" %></span>
+            </div>
+
+            <div class="product-card-info-item">
+              <span class="product-card-info-label">Condição:</span>
+              <span class="badge <%= product.condition == 'factory_new' ? 'badge-success' : 'badge-info' %>">
+                <%= product.condition.humanize %>
+              </span>
+            </div>
+
+            <div class="product-card-info-item">
+              <span class="product-card-info-label">Status:</span>
+              <span class="badge <%= product.status == 'in_stock' ? 'badge-success' : 'badge-danger' %>">
+                <%= product.status.humanize %>
+              </span>
+            </div>
+
+            <div class="product-card-info-item">
+              <span class="product-card-info-label">Preço:</span>
+              <span class="product-card-info-value"><strong><%= number_to_currency(product.price) %></strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card-footer">
+          <%= link_to 'Ver', product, class: 'btn btn-secondary btn-sm' %>
+          <%= link_to 'Editar', edit_product_path(product), class: 'btn btn-primary btn-sm' %>
+          <%= button_to 'Remover', product, 
+              method: :delete, 
+              data: { confirm: 'Tem certeza?' }, 
+              class: 'btn btn-danger btn-sm',
+              form: { style: 'display: inline;', data: { confirm: 'Tem certeza?' } } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <p>Nenhum produto cadastrado ainda.</p>
+    <%= link_to 'Cadastre o primeiro produto', new_product_path, class: 'btn btn-primary' %>
+  </div>
+<% end %>
