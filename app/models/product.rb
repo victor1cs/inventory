@@ -17,4 +17,9 @@ class Product < ApplicationRecord
   validates :condition, presence: true
   validates :status, presence: true
   validates :category, presence: true
+
+  scope :in_stock, -> { where(status: :in_stock) }
+  scope :sold, -> { where(status: :sold) }
+  scope :factory_new, -> { where(condition: :factory_new) }
+  scope :used, -> { where(condition: :used) }
 end

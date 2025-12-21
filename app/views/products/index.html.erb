@@ -3,61 +3,114 @@
   <%= link_to 'Novo Produto', new_product_path, class: 'btn btn-primary' %>
 </div>
 
+<div class="filters-container">
+  <%= form_with url: products_path, method: :get, local: true, class: "filters-form" do |f| %>
+    <div class="filter-search-group">
+      <%= f.text_field :search, 
+          value: @search_term, 
+          placeholder: "Procure por nome...", 
+          class: "filter-search-input" %>
+    </div>
+
+    <div class="filter-group">
+      <%= f.label :status_filter, "Status:", class: "filter-label" %>
+      <%= f.select :status_filter, 
+          options_for_select([
+            ['Em Estoque', 'in_stock'],
+            ['Vendidos', 'sold'],
+            ['Todos', 'all']
+          ], @status_filter || 'in_stock'),
+          {},
+          { class: "form-select filter-select" } %>
+    </div>
+
+    <div class="filter-group">
+      <%= f.label :per_page, "Por página:", class: "filter-label" %>
+      <%= f.select :per_page,
+          options_for_select([
+            ['10', 10],
+            ['20', 20],
+            ['50', 50]
+          ], @per_page || 10),
+          {},
+          { class: "form-select filter-select" } %>
+    </div>
+
+    <div class="filter-actions">
+      <%= f.submit "Buscar", class: "btn btn-primary filter-submit-btn" %>
+    </div>
+
+    <%= f.hidden_field :page, value: 1 %>
+  <% end %>
+</div>
+
 <% if @products.any? %>
-  <!-- Desktop Table View -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Categoria</th>
-          <th>Cor</th>
-          <th>Condição</th>
-          <th>Status</th>
-          <th>Preço</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @products.each do |product| %>
-          <tr>
-            <td><strong><%= product.name %></strong></td>
-            <td><span class="badge badge-info"><%= product.category.name %></span></td>
-            <td><%= product.color || "N/A" %></td>
-            <td>
-              <span class="badge <%= product.condition == 'factory_new' ? 'badge-success' : 'badge-info' %>">
-                <%= product.condition.humanize %>
-              </span>
-            </td>
-            <td>
-              <span class="badge <%= product.status == 'in_stock' ? 'badge-success' : 'badge-danger' %>">
-                <%= product.status.humanize %>
-              </span>
-            </td>
-            <td><strong><%= number_to_currency(product.price) %></strong></td>
-            <td>
-              <div class="actions">
-                <% if product.in_stock? %>
-                  <%= button_to 'Vender', sell_product_path(product), 
-                      method: :patch, 
-                      data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' }, 
-                      class: 'btn btn-success btn-sm',
-                      form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' } } %>
-                <% end %>
-                <%= link_to 'Editar', edit_product_path(product), class: 'btn btn-primary btn-sm' %>
-                <%= button_to 'Remover', product, 
-                    method: :delete, 
-                    data: { confirm: 'Tem certeza que deseja remover este produto?' }, 
-                    class: 'btn btn-danger btn-sm',
-                    form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja remover este produto?' } } %>
-              </div>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+  <div class="results-info">
+    <p>
+      Mostrando <%= @products.offset_value + 1 %> - <%= [@products.offset_value + @products.limit_value, @products.total_count].min %> 
+      de <%= pluralize(@products.total_count, 'produto') %>
+    </p>
   </div>
 
+  <!-- Desktop Table View -->
+  <div class="table-wrapper">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Cor</th>
+            <th>Condição</th>
+            <th>Status</th>
+            <th>Preço</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @products.each do |product| %>
+            <tr>
+              <td><strong><%= product.name %></strong></td>
+              <td><span class="badge badge-info"><%= product.category.name %></span></td>
+              <td><%= product.color || "N/A" %></td>
+              <td>
+                <span class="badge <%= product.condition == 'factory_new' ? 'badge-success' : 'badge-info' %>">
+                  <%= product.condition.humanize %>
+                </span>
+              </td>
+              <td>
+                <span class="badge <%= product.status == 'in_stock' ? 'badge-success' : 'badge-danger' %>">
+                  <%= product.status.humanize %>
+                </span>
+              </td>
+              <td><strong><%= number_to_currency(product.price) %></strong></td>
+              <td>
+                <div class="actions">
+                  <% if product.in_stock? %>
+                    <%= button_to 'Vender', sell_product_path(product), 
+                        method: :patch, 
+                        params: filter_params,
+                        data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' }, 
+                        class: 'btn btn-success btn-sm',
+                        form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' } } %>
+                  <% end %>
+                  <%= link_to 'Editar', edit_product_path(product), class: 'btn btn-primary btn-sm' %>
+                  <%= button_to 'Remover', product, 
+                      method: :delete,
+                      params: filter_params,
+                      data: { confirm: 'Tem certeza que deseja remover este produto?' }, 
+                      class: 'btn btn-danger btn-sm',
+                      form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja remover este produto?' } } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mobile Cards View -->
   <div class="products-grid">
     <% @products.each do |product| %>
       <div class="product-card">
@@ -97,14 +150,16 @@
         <div class="product-card-footer">
           <% if product.in_stock? %>
             <%= button_to 'Vender', sell_product_path(product), 
-                method: :patch, 
+                method: :patch,
+                params: filter_params,
                 data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' }, 
                 class: 'btn btn-success btn-sm',
                 form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja marcar este produto como vendido?' } } %>
           <% end %>
           <%= link_to 'Editar', edit_product_path(product), class: 'btn btn-primary btn-sm' %>
           <%= button_to 'Remover', product, 
-              method: :delete, 
+              method: :delete,
+              params: filter_params,
               data: { confirm: 'Tem certeza que deseja remover este produto?' }, 
               class: 'btn btn-danger btn-sm',
               form: { style: 'display: inline;', data: { confirm: 'Tem certeza que deseja remover este produto?' } } %>
@@ -112,9 +167,11 @@
       </div>
     <% end %>
   </div>
+  <div class="pagination-container">
+    <%= paginate @products, params: filter_params %>
+  </div>
 <% else %>
   <div class="empty-state">
-    <p>Nenhum produto cadastrado ainda.</p>
-    <%= link_to 'Cadastre o primeiro produto', new_product_path, class: 'btn btn-primary' %>
+    <p>Nenhum produto encontrado.</p>
   </div>
 <% end %>

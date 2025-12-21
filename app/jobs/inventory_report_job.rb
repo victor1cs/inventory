@@ -2,7 +2,7 @@ class InventoryReportJob < ApplicationJob
   queue_as :default
 
   def perform
-    products = Product.includes(:category).where(status: :in_stock).order(:name)
+    products = Product.in_stock
 
     if products.empty?
       puts "📦 Nenhum produto em estoque no momento."
@@ -27,12 +27,9 @@ class InventoryReportJob < ApplicationJob
       message += "#{product.category.name} | "
       message += "🎨 #{product.color || 'N/A'} | "
       message += "💾 #{product.storage || 'N/A'} | "
-      message += "🔋 #{product.battery_percentage ? "#{product.battery_percentage}%" : 'N/A'} | "
+      message += "🔋 #{product.battery_percentage}% | "
       message += "🛠️ #{product.condition.humanize}\n"
     end
-
-    message += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-    message += "✅ Relatório gerado automaticamente pelo sistema"
 
     message
   end

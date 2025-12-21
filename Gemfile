@@ -36,6 +36,9 @@ gem "connection_pool", "~> 2.4.1"
 gem "sidekiq", "~> 7.3"
 gem "sidekiq-cron"
 
+# Pagination
+gem "kaminari"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 

@@ -1,9 +1,11 @@
 class ProductsController < ApplicationController
+  include ProductFilterable
+
   before_action :authenticate_user!
   before_action :set_product, only: [ :show, :edit, :update, :destroy, :sell ]
 
   def index
-    @products = Product.includes(:category).order(created_at: :desc)
+    @products = apply_product_filters(Product.all)
   end
 
   def show
@@ -43,15 +45,15 @@ class ProductsController < ApplicationController
     service = ::ProductSaleService.new(@product)
 
     if service.call
-      redirect_to products_path, notice: "Produto vendido com sucesso!"
+      redirect_to products_path(filter_params), notice: "Produto vendido com sucesso!"
     else
-      redirect_to products_path, alert: service.errors.join(", ")
+      redirect_to products_path(filter_params), alert: service.errors.join(", ")
     end
   end
 
   def destroy
     @product.destroy
-    redirect_to products_path, notice: "Produto removido com sucesso!"
+    redirect_to products_path(filter_params), notice: "Produto removido com sucesso!"
   end
 
   private
