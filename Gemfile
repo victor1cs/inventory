@@ -32,7 +32,7 @@ gem "solid_cable"
 gem "devise"
 
 # Background Jobs
-gem "connection_pool", "~> 2.4.1"
+gem "connection_pool", "~> 2.5.5"
 gem "sidekiq", "~> 7.3"
 gem "sidekiq-cron"
 
